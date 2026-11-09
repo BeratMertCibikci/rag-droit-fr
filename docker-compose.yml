@@ -1,0 +1,11 @@
+services:
+  db:
+    image: paradedb/paradedb:latest
+    environment:
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag
+      POSTGRES_DB: rag
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql]
+volumes:
+  pgdata:

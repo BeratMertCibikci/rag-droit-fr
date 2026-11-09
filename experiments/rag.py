@@ -1,8 +1,6 @@
 from dotenv import load_dotenv
 from litellm import completion
-from ara import rerank_ara
-
-load_dotenv()
+from db_ara import db_rerank as rerank_ara
 
 SISTEM = """Tu es un assistant juridique. Réponds UNIQUEMENT à partir des sources fournies.
 Après chaque information, indique la source entre crochets, par ex. [2].
@@ -25,8 +23,6 @@ def cevapla(soru):
     for i, (_, _, p) in enumerate(sonuclar, 1):
         print(f"[{i}] {p['id']} | {p['url']}")
     print("Girdi token:", cevap.usage.prompt_tokens)
-
-for soru in ["Combien de temps peut-on conserver des données personnelles ?",
-             "Quel est le montant du salaire minimum en France ?"]:
+for soru in ["Qu'est-ce que le droit à l'oubli ?"]:
     print("\n########", soru)
     cevapla(soru)
