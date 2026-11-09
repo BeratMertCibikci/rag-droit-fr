@@ -9,3 +9,6 @@ wheels/
 .env
 # Virtual environments
 .venv/
+.Rhistory
+*.npy
+experiments/rgpd.html
