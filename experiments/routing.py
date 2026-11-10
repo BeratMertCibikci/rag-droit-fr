@@ -4,13 +4,13 @@ import psycopg
 URL = "postgresql://rag:rag@localhost:5432/rag"
 
 def madde_getir(no, kaynak=None):
-    sql, params = "SELECT id, metin, url FROM chunks WHERE madde = %s", [no]
+    sql, params = "SELECT id, metin, url, kaynak FROM chunks WHERE madde = %s", [no]
     if kaynak:                                   # kanun belliyse filtreye ekle
         sql += " AND kaynak = %s"
         params.append(kaynak)
     with psycopg.connect(URL) as conn:
         satirlar = conn.execute(sql + " ORDER BY id", params)
-        return [{"id": r[0], "metin": r[1], "url": r[2]} for r in satirlar]
+        return [{"id": r[0], "metin": r[1], "url": r[2], "kaynak": r[3]} for r in satirlar]
 
 def madde_no_bul(soru):
     eslesme = re.search(r"\bart(?:icle)?\.?\s*(\d+)", soru, re.IGNORECASE)
