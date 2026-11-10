@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from litellm import completion
 from db_ara import db_rerank as rerank_ara
-from routing import madde_no_bul, madde_getir
+from routing import madde_no_bul, madde_getir,kaynak_bul
 
 
 SISTEM = """Tu es un assistant juridique. Réponds UNIQUEMENT à partir des sources fournies.
@@ -13,7 +13,7 @@ ESIK = 0.05
 def kaynaklari_bul(soru):
     no = madde_no_bul(soru)
     if no:
-        parcalar = madde_getir(no)
+        parcalar = madde_getir(no,kaynak_bul(soru))
         if parcalar:                                   # madde gerçekten varsa
             return "madde", parcalar
     sonuclar = rerank_ara(soru)
@@ -26,7 +26,7 @@ def cevapla(soru):
     if yol == "yok":
         no = madde_no_bul(soru)
         if no:
-            print(f"L'article {no} n'existe pas dans le RGPD.")
+            print(f"L'article {no} n'existe pas dans les textes indexés.")
         print("Les sources ne contiennent pas d'information sur cette question.")
         return
     kaynaklar = "\n\n".join(f"[{i}] {p['metin']}" for i, p in enumerate(parcalar, 1))
@@ -41,9 +41,10 @@ def cevapla(soru):
     print("Girdi token:", cevap.usage.prompt_tokens)
     
 if __name__ == "__main__":
-    for soru in ["Que dit l'article 17 ?",
+    for soru in ["Que dit l'article 99 de l'AI Act ?",
+                 "Quels systèmes d'IA sont considérés comme à haut risque ?",
                  "Qu'est-ce que le droit à l'oubli ?",
-                 "Que dit l'article 999 sur l'oubli ?"]:
+                 "Que dit l'article 6 ?"]:
         print("\n########", soru)
         cevapla(soru)
     

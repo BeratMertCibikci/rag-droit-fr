@@ -12,7 +12,7 @@ def satirlari_birlestir(satirlar):
     return sonuc
 
 SINIR = 300
-maddeler = [json.loads(s) for s in open("data/rgpd.jsonl")]
+maddeler = [json.loads(s) for s in open("data/maddeler.jsonl", encoding="utf-8")]
 
 def paketle(satirlar, sinir=SINIR, sert_sinir=600):
     paketler, mevcut, giris = [], [], None
@@ -36,13 +36,15 @@ def paketle(satirlar, sinir=SINIR, sert_sinir=600):
     return paketler
 
 def parcala(m):
-    adres = f"RGPD > Article {m['numara']} > {m['alt_baslik']}"
+    adres = f"{m['kaynak']} > {m['baslik']} > {m['alt_baslik']}"
+    onek = m["kaynak"].lower().replace(" ", "")         # "RGPD" → "rgpd", "AI Act" → "aiact"
+    no = m["numara"].replace(" ", "-")                  # "Annexe III" → "Annexe-III"
     if len(m["metin"].split()) <= SINIR:
         parcalar = [m["metin"]]            # kısa: tek parça
     else:
         parcalar = paketle(satirlari_birlestir(m["metin"].split("\n")))  # uzun: satır satır
-    return [{"id": f"rgpd-{m['numara']}-{i}",
-            "kaynak": "RGPD",
+    return [{"id": f"{onek}-{no}-{i}",
+            "kaynak": m["kaynak"],
             "madde": m["numara"],
             "url": m["url"],
             "metin": adres + "\n" + p}
@@ -52,7 +54,7 @@ hepsi = [parca for m in maddeler for parca in parcala(m)]
 print(len(hepsi), "parça")
 
     
-with open("data/rgpd_chunks.jsonl", "w") as f:
+with open("data/chunks.jsonl", "w") as f:
     for c in hepsi:
         f.write(json.dumps(c, ensure_ascii=False) + "\n")
 print(len(hepsi), "parça kaydedildi")
